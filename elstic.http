@@ -1,0 +1,28 @@
+GET https://swapi.dev/api/people/1/
+
+###
+
+GET http://192.168.109.71:9200/shakespeare/_search?pretty
+Content-Type: application/json
+
+{
+    "query":{
+        "match_phrase":{
+            "text_entry":"to be or not to be"
+        }
+    }
+}
+
+### 
+curl -H "Content-Type: application/json" 
+-XGET 'http://192.168.109.71:9200/shakespeare/_search?pretty' 
+-d 
+'{
+    "query":
+    {
+        "match_phrase":
+        {
+            "text_entry":"to be or not to be"
+        }
+    }
+}'
