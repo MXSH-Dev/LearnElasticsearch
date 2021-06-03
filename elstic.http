@@ -1,8 +1,12 @@
-GET https://swapi.dev/api/people/1/
+@host = jsonplaceholder.typicode.com
+
+@vm_ip = 192.168.109.78
 
 ###
+GET https://{{host}}/todos/1
 
-GET http://192.168.109.71:9200/shakespeare/_search?pretty
+###
+GET http://{{vm_ip}}:9200/shakespeare/_search?pretty
 Content-Type: application/json
 
 {
@@ -13,9 +17,13 @@ Content-Type: application/json
     }
 }
 
+###
+GET http://{{vm_ip}}:9200/shakespeare/_search?pretty
+Content-Type: application/json
+
 ### 
 curl -H "Content-Type: application/json" 
--XGET 'http://192.168.109.71:9200/shakespeare/_search?pretty' 
+-XGET 'http://{{vm_ip}}:9200/shakespeare/_search?pretty' 
 -d 
 '{
     "query":
@@ -23,6 +31,175 @@ curl -H "Content-Type: application/json"
         "match_phrase":
         {
             "text_entry":"to be or not to be"
+        }
+    }
+}'
+
+### 
+curl -H "Content-Type: application/json" 
+-XPUT 'http://{{vm_ip}}:9200/movies' 
+-d 
+'{
+    "mappings":
+    {
+        "properties":
+        {
+            "year":{
+                "type":"date"
+            }
+        }
+    }
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_mapping' 
+
+###
+curl -H "Content-Type: application/json" 
+-XPOST 'http://{{vm_ip}}:9200/movies/_doc/109487'
+-d 
+'{
+    "mappings": ["IMAX","Sci-Fi"],
+    "title":"Interstellar",
+    "year":2014
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_search?pretty'
+
+###
+# wget http://media.sundog-soft.com/es7/movies.json
+
+###
+curl -H "Content-Type: application/json" 
+-XPUT 'http://{{vm_ip}}:9200/_bulk?pretty'
+--data-binary @movies.json
+
+###
+curl -H "Content-Type: application/json" 
+-XPUT 'http://{{vm_ip}}:9200/movies/_doc/109487?pretty'
+-d 
+'{
+    "generes":["IMAX","Sci-Fi"],
+    "title":"Interstellar",
+    "year":2014
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XPOST 'http://{{vm_ip}}:9200/movies/_doc/109487/_update'
+-d
+'{
+    "doc":{
+        "title":"Interstellar"
+    }
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_search?q=Dark&pretty'
+
+###
+curl -H "Content-Type: application/json" 
+-XDELETE 'http://{{vm_ip}}:9200/movies/_doc/58559?pretty'
+
+###
+curl -H "Content-Type: application/json" 
+-XPUT 'http://{{vm_ip}}:9200/movies/_doc/666?pretty'
+-d 
+'{
+    "title":"Franks Adventures in Elasticsearch",
+    "genres":["Action"],
+    "year":2021
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_doc/666?pretty'
+
+###
+curl -H "Content-Type: application/json" 
+-XPOST 'http://{{vm_ip}}:9200/movies/_doc/666/_update?pretty'
+-d 
+'{
+    "doc":{
+        "title":"Franks Adventures in Elasticsearch",
+        "genres":["Action","Sci-Fi"]
+    }
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XDELETE 'http://{{vm_ip}}:9200/movies/_doc/666?pretty'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_doc/109487?pretty'
+
+###
+curl -H "Content-Type: application/json" 
+-XPUT 'http://{{vm_ip}}:9200/movies/_doc/109487?if_seq_no=14&if_primary_term=1'
+-d 
+'{
+    "title":"Interstellar",
+    "genres":["Action","Sci-Fi"],
+    "year":2021
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XPOST 'http://{{vm_ip}}:9200/movies/_doc/109487/_update?pretty&retry_on_conflict=5'
+-d 
+'{
+    "doc":{
+        "title":"Interstellar",
+        "genres":["Action","Sci-Fi"]
+    }
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_search?pretty'
+-d 
+'{
+    "query":{
+        "match":{
+            "title":"Star Trek"
+        }
+    }
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_search?pretty'
+-d 
+'{
+    "query":{
+        "match_phrase":{
+            "genre":"sci"
+        }
+    }
+}'
+
+###
+# FIXME: this deletes the entire index
+curl -H "Content-Type: application/json" 
+-XDELETE 'http://{{vm_ip}}:9200/movies/'
+
+###
+# TODO: Define new mapping
+curl -H "Content-Type: application/json" 
+-XPUT 'http://{{vm_ip}}:9200/movies'
+-d 
+'{
+    "mappings":{
+        "properties":{
+            "id":{"type":"integer"},
+            "year":{"type":"date"},
+            "genre":{"type":"keyword"},
+            "title":{"type":"text", "analyzer":"english"}
         }
     }
 }'
