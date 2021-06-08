@@ -203,3 +203,31 @@ curl -H "Content-Type: application/json"
         }
     }
 }'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_search?pretty'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_search?pretty'
+-d 
+'{
+    "query":{
+        "match_phrase":{
+            "genre":"Sci-Fi"
+        }
+    }
+}'
+
+###
+curl -H "Content-Type: application/json" 
+-XGET 'http://{{vm_ip}}:9200/movies/_search?pretty'
+-d 
+'{
+    "query":{
+        "match_phrase":{
+            "title":"star trek"
+        }
+    }
+}'
